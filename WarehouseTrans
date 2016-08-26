@@ -1,0 +1,16 @@
+var items = form.GetControl("c_TranGrid").InputControl.GetAllItems();
+var asum = 0;
+var ssum = 0;
+for (var i=0; i < items.length; i++)
+  {
+    if (items[i].Add != "")
+   {
+     asum = asum + parseInt(items[i].Add);
+   }
+    if (items[i].Subtract != "")
+   {
+     ssum = ssum + parseInt(items[i].Subtract);
+   }
+  }
+form.GetControl("c_QtyReceived").SetValue(asum.toFixed(0));
+form.GetControl("c_QtyIssued").SetValue(ssum.toFixed(0));
