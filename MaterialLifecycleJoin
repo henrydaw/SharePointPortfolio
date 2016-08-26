@@ -1,0 +1,57 @@
+SELECT 
+lm.masterid 
+,pol.POL_PO_BASE_NUM 
+,pol.POL_LINE_NO 
+,pol.POL_REQ_NO 
+,pol.POL_ITEM_DESC_3 
+,li.CFShipment 
+,li.VendorPartReady 
+,lm.qty 
+,li.InspQty 
+,li.InspDate 
+,li.DelivDate 
+,lm.partno 
+,lm.StartDate 
+,lm.RDD 
+,lm.VenRdd 
+,lm.VendorStartDate 
+,lm.Award 
+,lm.AwardDate
+,pr.ReqNumber 
+,pr.ReqDate 
+,pr.ReqDirApprovedDate 
+,pr.Vendor
+,isd.Title 
+,isd.shpreqno 
+,isd.KaiaReceived 
+,isd.FinalPackinglist 
+,isd.departure 
+,isd.arrival 
+,isd.DelReportCreated 
+,isd.DelReportSigned 
+,isd.shipper
+,spo.PoNumber 
+,spo.PoDate 
+,spo.RecSignedPoDate 
+,spo.AdvPmtReq
+,fpo.PoNumber as fpono 
+,fpo.PoDate as fpodate 
+,fpo.RecSignedPoDate as fsupplieraccept
+  FROM  [593398-SQLDB1].[PROD_AVIATION_Reporting].[db_owner].[SPViews.CLS_LIMMaster] lm
+  left join GCS..none.PO03POL AS pol
+  on  pol.POL_ITEM_DESC_3 collate SQL_Latin1_General_CP1_CI_AS = cast (lm.masterid as nvarchar(10))
+  left join [593398-SQLDB1].[PROD_AVIATION_Reporting].db_owner.[SPViews.CLS_LIMInspections] AS li
+  on pol.POL_ITEM_DESC_3 collate SQL_Latin1_General_CP1_CI_AS = cast (li.masterid as nvarchar(10))
+  left join [593398-SQLDB1].[PROD_AVIATION_Reporting].[db_owner].[SPViews.Requisition] pr
+  on pr.ReqNumber = pol.POL_REQ_NO collate SQL_Latin1_General_CP1_CI_AS
+  left join [593398-SQLDB1].[PROD_AVIATION_Reporting].[db_owner].[SPViews.LIM_Inspect-Ship-Deliver] as isd
+  on isd.Title = li.CFShipment
+  cross apply (select top (1) po.Version, po.PoNumber, po.PoDate, po.RecSignedPoDate, po.AdvPmtReq from [593398-SQLDB1].[PROD_AVIATION_Reporting].[db_owner].[SPViews.SC_Purchase_Order] po where pr.ReqNumber = po.ReqNumber order by po.version desc) spo
+  outer apply (select top (1) po1.Version, po1.PoNumber, po1.PoDate, po1.RecSignedPoDate, po1.AdvPmtReq from [593398-SQLDB1].[PROD_AVIATION_Reporting].[db_owner].[SPViews.SC_Purchase_Order] po1 where isd.shpreqno = po1.ReqNumber order by po1.version desc) fpo
+  where Year(pol.POL_DATE_ORDER8) >= '2015'
+  Group By lm.masterid, pol.POL_PO_BASE_NUM, pol.POL_LINE_NO, pol.POL_REQ_NO, pol.POL_ITEM_DESC_3, li.CFShipment, li.VendorPartReady, lm.qty, li.InspQty, li.InspDate, li.DelivDate, lm.StartDate, lm.RDD, lm.VenRdd, lm.VendorStartDate, lm.partno, lm.Award, lm.AwardDate
+  ,pr.ReqNumber, pr.ReqDate, pr.ReqDirApprovedDate, pr.Vendor
+  ,spo.PoNumber, spo.PoDate, spo.RecSignedPoDate, spo.AdvPmtReq
+  ,fpo.PoNumber, fpo.PoDate, fpo.RecSignedPoDate
+  ,isd.Title, isd.shpreqno, isd.KaiaReceived, isd.FinalPackinglist, isd.departure, isd.arrival, isd.DelReportCreated, isd.DelReportSigned, isd.shipper
+  Order by lm.MasterID
