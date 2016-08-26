@@ -1,0 +1,15 @@
+SELECT lm.Vendor
+,lm.MasterID
+,SUM(CASE 
+  WHEN li.VendorPartReady > lm.VenRDD THEN 0 
+  WHEN lm.VenRDD < GetDate() AND li.InspQty IS NULL THEN 0 
+  WHEN li.VendorPartReady <= lm.VenRDD THEN ISNULL(li.InspQty, lm.qty) / lm.Qty 
+  WHEN li.VendorPartReady IS NULL AND li.InspDate is null AND lm.VenRDD < GetDate() THEN 0 
+  WHEN lm.VenRDD > GetDate() AND li.InspQty / lm.Qty = '1' THEN 1 
+  WHEN li.VendorPartReady is null AND li.InspDate is not null AND  li.InspDate<lm.VenRDD then 1
+  END) AS OTD
+FROM  db_owner.[SPViews.CLS_LIMMaster] AS lm 
+LEFT OUTER JOIN  db_owner.[SPViews.CLS_LIMInspections] AS li ON lm.MasterID = li.MasterID
+WHERE (lm.VendorStartDate IS NOT NULL and lm.VenRDD < GetDate() and li.InspStatus = 'Accepted') or (lm.VendorStartDate IS NOT NULL and lm.VenRDD > GetDate() and li.inspqty/lm.qty = '1' and li.InspStatus = 'Accepted')
+GROUP BY lm.Vendor, lm.MasterID
+ORDER BY lm.MasterID
