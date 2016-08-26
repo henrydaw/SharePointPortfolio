@@ -1,0 +1,55 @@
+select *
+from (select cast(lm.MasterID as nvarchar(20)) as MasterID
+  ,lm.Award
+  ,lm.AwardItemNo
+  ,lm.AwardDate
+  ,lm.MISReq
+  ,lm.MISLine
+  ,lm.MISDocNo
+  ,lm.Entity
+  ,lm.DeliveryARO
+  ,lm.PartNo
+  ,lm.PartNoAlt as AlternatePartNo
+  ,lm.Description
+  ,lm.qty
+  ,lm.InspQty
+  ,lm.DelivQty
+ -- ,lm.InspDate
+  ,lm.DelivStatus
+  ,lm.Vendor
+  ,lm.EstDelivDate
+  ,lm.ProposalDate
+  ,lm.InternalRemark
+  ,lm.ItemComment
+  ,ItemStatus = ''
+,loc = 'LIM'
+from [db_owner].[SPViews.CLS_LIMMaster] lm
+UNION
+select rm.RORTrackingNo as MasterID
+  ,rm.Award
+  ,rm.AwardItemNo
+  ,rm.vAwardDate as AwardDate
+   ,rm.MISReq
+  ,rm.MISReqLine
+  ,rm.MISDocNo
+  ,rm.Entity
+  ,rm.IVFinalDelvTerms as DeliveryARO
+  ,rm.PartNo as PartNo
+  ,AlternatePartNo = ''
+  ,rm.Description
+  ,rm.qty
+  ,rm.InspQty
+  ,rm.DelivQty
+  ,case when rm.DelivQty is null then 'Open' 
+   when rm.DelivQty < rm.Qty then 'Open'
+else 'Closed' end as DelivStatus
+ -- ,rm.InspDate
+  ,rm.IIVendor as Vendor
+  ,rm.EstDelvDate
+  ,rm.IISAProposalDate as ProposalDate
+  ,rm.InternalRemarks as InternalRemark
+  ,rm.ItemComment
+  ,rm.ItemStatus
+,loc = 'ROR'
+from [db_owner].[SPViews.CLS_RORMaster] rm) as c
+where c.PartNo like '%' + @PartNo + '%'  and (c.Award is null or c.Award <> 'Requirement Cancelled') and  c.ItemStatus <> 'Disposed DRMO' and  c.ItemStatus <> 'Awaiting DRMO' and c.ItemStatus <> 'Returned to NSWRA' and c.ItemStatus <> 'Remove from Inventory'
