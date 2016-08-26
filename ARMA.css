@@ -1,0 +1,107 @@
+.ms-backgroundImage {
+background-image:url('bg_camo_white.jpg'); background-color: #f6f7f9 !important;
+}
+#suiteBarLeft, #suiteBarRight {
+background-image:url('Grunge_background_repeating.jpg');
+}
+.ms-mpSearchBox {
+width: auto;
+}
+.ms-welcome-root > a.ms-core-menu-root, .ms-signInLink {
+color: #fff;
+}
+.ms-welcome-root > a.ms-core-menu-root:hover {
+color: #333;
+}
+#s4-titlerow {
+FONT-FAMILY: "Helvetica Neue", Arial, Helvetica, sans-serif; FONT-SIZE: 14px; border-bottom: #333 2px solid; Padding: 10px; background-image:url('bg_camo.jpg');
+}
+.ms-tableRow {
+background-image:url('bg_camo.jpg'); background-repeat: repeat-x;
+}
+#siteIcon {
+background-color: transparent;
+}
+.ms-core-pageTitle, .ms-core-pageTitle a {
+color: #fff;
+}
+.ms-helperText, input.ms-helperText {
+color: #fff;
+}
+/* Resize navigation fly-out width */
+ul.dynamic {
+  width: auto !important;  /* !important needed to override inline SharePoint style */
+  white-space: nowrap;
+}
+.ms-srch-sb > input {
+color: #fff;
+}
+li.dynamic {
+list-style-type: circle;
+margin-left: 5px;
+margin-right: 5px;
+padding-bottom: 3px;
+}
+.ms-core-listMenu-horizontalBox li.static > ul a { 
+ display: block !important; 
+}
+.ms-core-listMenu-horizontalBox li.static > .ms-core-listMenu-item {
+color: #fff;
+background: -webkit-gradient(linear, left top, left bottom, from(#ff4611), to(#ff4611));
+background: -webkit-linear-gradient(top, #ff4611, #ff4611);
+background: -moz-linear-gradient(top, #ff4611, #ff4611);
+background: -ms-linear-gradient(top, #ff4611, #ff4611);
+background: -o-linear-gradient(top, #ff4611, #ff4611);
+-webkit-border-radius: 8px;
+-moz-border-radius: 8px;
+border-radius: 8px;
+-webkit-box-shadow: rgba(0,0,0,1) 0 1px 0;
+-moz-box-shadow: rgba(0,0,0,1) 0 1px 0;
+box-shadow: rgba(0,0,0,1) 1px 1px 1px 1px;
+text-shadow: rgba(0,0,0,.4) 0 1px 0;
+padding: 2px 5px 2px 5px;
+}
+.ms-core-listMenu-horizontalBox li.static > .ms-core-listMenu-item:hover {
+color: #fff;
+background-image: url('Grunge_background_repeating.jpg');
+-webkit-border-radius: 8px;
+-moz-border-radius: 8px;
+border-radius: 8px;
+-webkit-box-shadow: rgba(0,0,0,1) 0 1px 0;
+-moz-box-shadow: rgba(0,0,0,1) 0 1px 0;
+box-shadow: rgba(0,0,0,1) 1px 1px 1px 1px;
+text-shadow: rgba(0,0,0,.4) 0 1px 0;
+padding: 2px 5px 2px 5px;
+}
+.ms-core-listMenu-horizontalBox li.static > .ms-core-listMenu-item {
+margin-right: 10px;
+}
+.ms-navedit-editLinksText:hover > span > .ms-metadata, .ms-core-listMenuEdit:hover > tr > .ms-navedit-linkCell > .ms-core-listMenu-item {
+color: #fff;
+}
+.ms-core-listMenu-selected:link, .ms-core-listMenu-selected:visited, .ms-core-listMenu-selected {
+color: #fff;
+background: -webkit-gradient(linear, left top, left bottom, from(#ff4611), to(#ff4611));
+background: -webkit-linear-gradient(top, #ff4611, #ff4611);
+background: -moz-linear-gradient(top, #ff4611, #ff4611);
+background: -ms-linear-gradient(top, #ff4611, #ff4611);
+background: -o-linear-gradient(top, #ff4611, #ff4611);
+}
+
+.ms-core-listMenu-verticalBox li.static > .ms-core-listMenu-item {
+color:#fff;
+}
+.ms-core-listMenu-verticalBox {
+border: #333 2px solid; 
+FONT-SIZE: 14px; 
+background-image:url('bg_camo.jpg');
+}
+#ctl00_PlaceHolderLeftNavBar_PlaceHolderQuickLaunchBottom_idNavLinkViewAll:hover {
+color: #fff;
+}
+.ms-dlgFrame {
+min-width:1050px;
+}
+.ms-peopleux-userdetails {
+background-color: #fff !important;
+}
