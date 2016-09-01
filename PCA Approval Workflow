@@ -1,0 +1,212 @@
+//Pca Approve
+
+var user = form.GetControl("c_Login").GetValue();
+var currentDate = new Date();
+var spDate = currentDate.getFullYear() + "-" + (currentDate.getMonth() + 1) 
++ "-" + currentDate.getDate();
+var ap1 = form.GetControl("c_PcaPrimary").GetValue()
+var ap2 = form.GetControl("c_PcaBackup").GetValue()
+var hot = form.GetControl("c_Hot").GetValue()
+var pmo = form.GetControl("c_PmoRequired").GetValue()
+if (user == ap1 || user == ap2)
+   {
+  var nl = String.fromCharCode(13);
+  var htmlNewLine = "<br />";
+
+  if (form.IsNewRecord())
+    {
+    alert("Please 'Save' record first!");
+    }
+  else
+    {
+   if (pmo == true)
+    {
+      var CbP = form.GetControl("c_CbPmoP").GetValue()
+      var CbB = form.GetControl("c_CbPmoB").GetValue()
+      var PriEmail = form.GetControl("c_PmoPrimaryEmail").GetValue()
+      var BakEmail = form.GetControl("c_PmoBackupEmail").GetValue()
+    }
+   else
+    {
+      var CbP = form.GetControl("c_CbDirP").GetValue()
+      var CbB = form.GetControl("c_CbDirB").GetValue()
+      var PriEmail = form.GetControl("c_DirPrimaryEmail").GetValue()
+      var BakEmail = form.GetControl("c_DirBackupEmail").GetValue()
+    }
+    var notify = " "
+   if (CbP == true)
+    {
+    notify = PriEmail + nl
+    }
+   if (CbB == true)
+    {
+    notify = notify + BakEmail
+    }
+    if (CbP == false && CbB == false)
+      {
+      alert("No PMO checked!");
+      }
+   else
+    {
+  if ( pmo == true)
+    {
+      var msg = "Are you sure you want to approve this Req and notify PMO/Manager to approve!"
+      +	nl + notify + nl + "Will be Emailed"
+    }
+  else
+    {
+      var msg = "Are you sure you want to approve this Req and notify Director to approve!"
+      +  nl + notify + nl + "Will be Emailed"
+    }
+ 
+   var ok = confirm(msg);
+    if (ok == true)
+        {
+         var id = form.GetControl("c_ID").GetValue();
+         var url = "https://lim.arma-aviation.com/sites/sc/reqpo/Lists/Requisition/EditForm.aspx?ID="
+         + id;
+         var by = form.GetControl("c_ReqCreatedBy").GetValue();
+         var req = form.GetControl("c_ReqNumber").GetValue();
+         var title = form.GetControl("c_Title").GetValue();
+         var dept = form.GetControl("c_ProgramDept").GetValue();
+         var value = form.GetControl("c_ReqTotalAmt").GetValue();
+      if (pmo == true)
+        {
+             var subject = "Purchase Requisition Approved by PCA needs PMO/Manager Approval";
+        }
+      else
+        {
+            var subject = "Purchase Requisition Approved by PCA/Finance needs Director Approval";
+        }
+        if (hot == true)
+          {
+          subject = "HOT! " + subject;
+          }
+      if (pmo == true)
+        {
+            var body = "Purchase Requisition Requires PMO/Manager Approval" ;
+        }
+      else
+        {
+           var body = "Purchase Requisition Requires Director Approval" ;
+        }
+         body = body + htmlNewLine + htmlNewLine + "Req Number:  " + req;
+         body = body + htmlNewLine + "Requested by: " + by;
+         body = body + htmlNewLine + "For Dept/Program: " + dept;
+         body = body + htmlNewLine + "Description:  " + title;
+         body = body + htmlNewLine + "Est Value: " + value;
+         body = body + htmlNewLine + htmlNewLine + url;
+        form.GetControl("c_ReqPCAApprovedBy").SetValue(user);
+        form.GetControl("c_ReqPCAApprovedDate").SetValue(spDate);
+    
+     if (pmo == true)
+         {
+         var isApproved = form.GetControl("c_ReqPMOApprovedDate").GetValue();
+         if (isApproved == "")
+            {
+                if (CbP == true && PriEmail !="")
+                    {
+                    form.SendEmail(PriEmail, subject, body);
+                     }
+                if (CbB == true && BakEmail !="")
+                    {
+                    form.SendEmail(BakEmail, subject, body);
+                    }
+       form.GetControl("c_ReqStatus").SetValue("Need PMO Approval");
+            alert("Emails sent and Status Changed");
+            }
+         else
+            {
+            alert("PMO already approved! - No Email Sent");
+            }
+          }
+     else
+        {
+         var isApproved = form.GetControl("c_ReqDirApprovedDate").GetValue();
+         if (isApproved == "")
+            {
+                if (CbP == true && PriEmail !="")
+                    {
+                    form.SendEmail(PriEmail, subject, body);
+                     }
+                if (CbB == true && BakEmail !="")
+                    {
+                    form.SendEmail(BakEmail, subject, body);
+                    }
+            form.GetControl("c_ReqStatus").SetValue("Need Dir Approval");
+            alert("Emails sent and Status Changed");
+            }
+         else
+            {
+            alert("Director already approved! - No Email Sent");
+            }
+        }
+        form.SaveRecord();
+          }
+      else
+         {
+          alert("No Emails Sent!");
+          } 
+    }
+  }
+  }
+else
+  {
+  alert("You are not authorized to approve PCA!")
+  }
+
+//Pca Reject
+
+var user = form.GetControl("c_Login").GetValue();
+var currentDate = new Date();
+var spDate = currentDate.getFullYear() + "-" + (currentDate.getMonth() + 1) + "-" + currentDate.getDate();
+var ap1 = form.GetControl("c_PcaPrimary").GetValue()
+var ap2 = form.GetControl("c_PcaBackup").GetValue()
+if (user == ap1 || user == ap2)
+  {
+  var nl = String.fromCharCode(13);
+  var htmlNewLine = "<br />";
+
+  if (form.IsNewRecord())
+    {
+    alert("Please 'Save' record first!");
+    }
+  else
+    {
+   var notify = form.GetControl("c_ReqCreatedByEmail").GetValue()
+     var msg = "Are you sure you want to Reject this Req!" + nl + notify + nl + "Will be Emailed"
+     + nl + "Did you add a Rejected Comment?"
+     var ok = confirm(msg);
+     if (ok == true)
+          {
+         var id = form.GetControl("c_ID").GetValue();
+         var url = "https://lim.arma-aviation.com/sites/sc/reqpo/Lists/Requisition/EditForm.aspx?ID="
+         + id;
+         var by = form.GetControl("c_ReqCreatedBy").GetValue();
+         var req = form.GetControl("c_ReqNumber").GetValue();
+         var title = form.GetControl("c_Title").GetValue();
+         var dept = form.GetControl("c_ProgramDept").GetValue();
+         var value = form.GetControl("c_ReqTotalAmt").GetValue();
+         var subject = "Purchase Requisition is Rejected by PCA";
+         var body = "Purchase Requisition Rejected by PCA" ;
+         body = body + htmlNewLine + htmlNewLine + "Req Number:  " + req;
+         body = body + htmlNewLine + "Requested by: " + by;
+         body = body + htmlNewLine + "For Dept/Program: " + dept;
+         body = body + htmlNewLine + "Description:  " + title;
+         body = body + htmlNewLine + "Est Value: " + value;
+         body = body + htmlNewLine + htmlNewLine + url;
+         form.GetControl("c_ReqStatus").SetValue("Rejected by PCA");
+         form.SendEmail(notify, subject, body);
+         form.SaveRecord();
+         alert("Emails sent and Status Changed");
+          }
+      else
+         {
+          alert("No Emails Sent!");
+          } 
+      }
+  }
+else
+  {
+  alert("You are not authorized to Reject PCA!")
+  }
