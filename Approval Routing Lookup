@@ -1,0 +1,45 @@
+var contract = form.GetControl("c_ProgramDept").GetValue();
+if (form.Loaded)
+		{
+		criteria = [];
+		var ss = new pf.SearchSpec();
+		ss.FieldName = "Title";
+		ss.FieldValue = contract;
+		ss.Operator = "Equals";  
+		ss.Type = "Text";
+		criteria.push(ss);
+		form.LoadRecords("https://lim.arma-aviation.com/sites/SC/Admin", "Contract", "", criteria, null, null, false, 0, function(e)
+ 		{
+  		if (e.ListItems.length > 0) 
+    		{
+			  form.GetControl("c_PmPrimaryPP").SetValue(e.ListItems[0].PmPrimaryPP);
+    		form.GetControl("c_PmoPrimary").SetValue(e.ListItems[0].PmPrimary);
+    		form.GetControl("c_PmoPrimaryEmail").SetValue(e.ListItems[0].PmPrimaryEmail);
+			  form.GetControl("c_PcaPrimaryPP").SetValue(e.ListItems[0].PcaPrimaryPP);
+    		form.GetControl("c_PcaPrimary").SetValue(e.ListItems[0].PcaPrimary);
+    		form.GetControl("c_PcaPrimaryEmail").SetValue(e.ListItems[0].PcaPrimaryEmail);
+			  form.GetControl("c_VpPrimaryPP").SetValue(e.ListItems[0].VpPrimaryPP);
+    		form.GetControl("c_VpPrimary").SetValue(e.ListItems[0].VpPrimary);
+    	  form.GetControl("c_VpPrimaryEmail").SetValue(e.ListItems[0].VpPrimaryEmail);
+			  form.GetControl("c_DirPrimaryPP").SetValue(e.ListItems[0].DirPrimaryPP);
+    		form.GetControl("c_DirPrimary").SetValue(e.ListItems[0].DirPrimary);
+    		form.GetControl("c_DirPrimaryEmail").SetValue(e.ListItems[0].DirPrimaryEmail);
+    		form.GetControl("c_PmBackupPP").SetValue(e.ListItems[0].PmBackupPP);
+		    form.GetControl("c_PmoBackup").SetValue(e.ListItems[0].PmBackup);
+    		form.GetControl("c_PmoBackupEmail").SetValue(e.ListItems[0].PmBackupEmail);
+			  form.GetControl("c_PcaBackupPP").SetValue(e.ListItems[0].PcaBackupPP);
+    		form.GetControl("c_PcaBackup").SetValue(e.ListItems[0].PcaBackup);
+    		form.GetControl("c_PcaBackupEmail").SetValue(e.ListItems[0].PcaBackupEmail);
+			  form.GetControl("c_VpBackupPP").SetValue(e.ListItems[0].VpBackupPP);
+    		form.GetControl("c_VpBackup").SetValue(e.ListItems[0].VpBackup);
+    		form.GetControl("c_VpBackupEmail").SetValue(e.ListItems[0].VpBackupEmail);
+			  form.GetControl("c_DirBackupPP").SetValue(e.ListItems[0].DirBackupPP);
+    		form.GetControl("c_DirBackup").SetValue(e.ListItems[0].DirBackup);
+    		form.GetControl("c_DirBackupEmail").SetValue(e.ListItems[0].DirBackupEmail);
+			  form.GetControl("c_SupplyChainLeadPP").SetValue(e.ListItems[0].SupplyChainLeadPP);
+    		form.GetControl("c_SupplyChainLead").SetValue(e.ListItems[0].SupplyChainLead); 
+    		form.GetControl("c_SupplyChainLeadEmail").SetValue(e.ListItems[0].SupplyChainLeadEmail);
+    		}
+   	});
+ }
+
