@@ -1,0 +1,11 @@
+select clm.PartNo, clm.Description, clm.qty, clm.StartDate, clm.PONo, clm.POLineNo, clm.DeliveryARO, clm.RDD, clm.Vendor, cli.VendorPartReady, clm.VendorStartDate, clm.VenEDD, clm.VenRdd, cli.InspDate, cli.InspQty, cli.DelivDate, cli.DelivQty
+FROM [PROD_AVIATION_Reporting].[db_owner].[SPViews.CLS_LIMMaster] clm
+LEFT JOIN  [PROD_AVIATION_Reporting].[db_owner].[SPViews.CLS_LIMInspections] cli
+ON clm.MasterID = cli.MasterID
+where clm.AwardItemNo is not null and clm.PartNo in (@Part)
+UNION
+select tlm.PartNo, tlm.Description, tlm.qty, tlm.StartDate, tlm.PONo, tlm.POLineNo, tlm.DeliveryARO, tlm.RDD, tlm.Vendor, cast('' as Date) as VendorPartReady, tlm.VendorStartDate, tlm.VenEDD, tlm.VenRdd, tli.InspDate, tli.InspQty, tli.DelivDate, tli.DelivQty
+FROM [PROD_AVIATION_Reporting].[db_owner].[SPViews.LIMMaster] tlm
+LEFT JOIN  [PROD_AVIATION_Reporting].[db_owner].[SPViews.LIMInspections] tli
+ON tlm.MasterID = tli.MasterID
+where tlm.AwardItemNo is not null and tlm.PartNo like '%'+@Part+'%'
