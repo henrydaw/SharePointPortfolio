@@ -1,0 +1,14 @@
+WITH MyRowSet
+AS (SELECT Concat(Month([SnapDate]),' - ',Year([SnapDate])) as SnapMoYear,MasterID,[InspQty],[DelivQty],
+case when DelivDate < VendorRdd then 'Items Delivered Early'
+when DelivDate = VendorRDD then 'Items Delivered On Time'
+when DelivDate > VendorRDD then 'Items Delivered Late'
+when DelivDate is null and InspDate is not null then 'Items Scheduled to be Delivered'
+when InspDate is null then 'Items Remaining Open' END as status,
+row_number() Over (Partition by MasterID  Order By SnapDate desc) as rn
+FROM [PROD_AVIATION_Reporting].[db_owner].[CLS_SnapLimInspections]
+where VendorRDD is not null and SnapDate between @Start and @End)
+select * 
+from MyRowSet
+--where rn = '1'
+Order By MasterID, rn
