@@ -1,0 +1,14 @@
+SELECT MasterID, Award, AwardItemNo, AwardDate, DATEADD(day, DeliveryARO, StartDate) as RDD, StartDate, EUC, EUCRequired, EUCID, MISReq, MISLine, MISDocNo, Description, PartNo, Entity, OrderPeriod, Platform, Qty, DeliveryARO-21 as InspAro, DeliveryARO, DATEADD(day, DeliveryARO - 21, StartDate) as ContractInspDate, ActInspDate, InspQty, DATEDIFF(day,CAST(DATEADD(day, DeliveryARO - 21, StartDate) AS DATE), ActInspDate) as InspDelta, Qty-InspQty as InspRemaining, (InspQty/Qty) * 100 as InspPct, (DelivQty/Qty)*100 as DelvPct, DelivQty, Qty-DelivQty AS RemainingQtyToShip, ActDelivDate, DATEDIFF(day, CAST(DATEADD(day, DeliveryARO, StartDate) AS date), ActDelivDate) as DelvDelta, 
+case when DelivQty >= qty then 'Complete'
+when DelivQty is null or DelivQty=0 then 'Remaining'
+when DelivQty > 0 and DelivQty < qty then 'Partial'Else 'Unknown'end as ItemStatus, 
+DATEDIFF(day,StartDate,ActDelivDate)  AS ContractToDeliveryTimeline,  DD250, CostArma, itemComment, CAST(EstDelivDate AS date) AS EstDelivDate, DATEDIFF(day, DATEADD(day, DeliveryARO, StartDate), GETDATE()) as DelvDayOut, OverdueGroup, OverdueComment, DateDiff(day, DATEADD(day, DeliveryARO, cast(StartDate as date)), cast(GetDate() as date)) as RDDvsToday,
+case when DateDiff(day,DATEADD(day, DeliveryARO, StartDate),cast(GetDate() as date)) >= '90' then 'I'
+when DateDiff(day,DATEADD(day, DeliveryARO, StartDate),GetDate()) between '30' and '89' then 'II'
+when DateDiff(day,DATEADD(day, DeliveryARO, StartDate),GetDate()) between '1' and '29' then 'III'
+when cast(EstDelivDate as Date) > cast(DATEADD(day, DeliveryARO, StartDate) as date) and cast(DATEADD(day, DeliveryARO, StartDate) as date) > cast(GetDate() as date) then 'IV'
+when DateDiff(day,DATEADD(day, DeliveryARO, StartDate),GetDate()) between '-60' and '0' then 'V'
+when DateDiff(day,DATEADD(day, DeliveryARO, StartDate),GetDate()) between '-90' and '-61' then 'VI'
+when DateDiff(day,DATEADD(day, DeliveryARO, StartDate),GetDate()) < '-90' then 'VII' END as Category
+FROM [PROD_AVIATION_Reporting].[db_owner].[SPViews.CLS_LIMMaster]
+WHERE  (DelivQty < qty or DelivQty is null) AND (StartDate IS NOT NULL) and AwardItemNo is not null
