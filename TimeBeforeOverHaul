@@ -1,1 +1,83 @@
-SELECT distinct tbo.[TBOID],x.Entity,x.List ,case when tbo.TBOID = '1' then '246-3904-000'when tbo.TBOID = '2' then N'КАУ-115AM'when tbo.TBOID = '3' then  N'8АМТ-1250-00'when tbo.TBOID = '4' then N'8А-4201-00А'when tbo.TBOID = '5' then N'8МТ.5104.200'when tbo.TBOID = '7' then N'8А-6314-00'when tbo.TBOID = '9' then N'8А-1515-000'when tbo.TBOID = '10' then N'8-1930-000 SER 2'when tbo.TBOID = '11' then N'АК-50Т1 СЕРИЯ 3'when tbo.TBOID = '12' then N'АИ-9В'when tbo.TBOID = '13' then N'ТВ3-117ВМ'when tbo.TBOID = '14' then N'НР-3ВМ-Т'when tbo.TBOID = '15' then N'1-4-4 WITH AGENT'when tbo.TBOID = '16' then N'ПП-3'when tbo.TBOID = '17' then N'КАУ-30Б'when tbo.TBOID = '18' then N'РА-60Б'when tbo.TBOID = '19' then N'8ТВ.6101.500'when tbo.TBOID = '20' then N'СГС-40ПУ'when tbo.TBOID = '21' then N'ГТ40ПЧ8В'when tbo.TBOID = '22' then N'АГБ-3К СЕРИЯ 3'when tbo.TBOID = '23' then N'15.5303.010.006'when tbo.TBOID = '24' then N'8МТВ5.6102.040-03'when tbo.TBOID = '25' then N'8МТВ5.6102.050-03'when tbo.TBOID = '26' then N'8АТ.2710.000'when tbo.TBOID = '27' then N'ВР-14'when tbo.TBOID = '28' then N'8А-6311-00 СЕРИИ 04'when tbo.TBOID = '29' then N'8АТ-3100-000'when tbo.TBOID = '30' then N'8-1950-000'when tbo.TBOID = '31' then N'ПР-15,875-2300-1-67'when tbo.TBOID = '32' then N'8А-1516-000'when tbo.TBOID = '33' then N'246-1517-000'END as PartNo1,case when tbo.TBOID = '1' then 'Tail Rotor Assembly'when tbo.TBOID = '2' then 'Flight Control Servo'when tbo.TBOID = '3' then  'Vibration Damper'when tbo.TBOID = '4' then 'NLG Shock Strut'when tbo.TBOID = '5' then 'Hydraulic Servo Mount Assembly'when tbo.TBOID = '7' then 'Oil Cooler Drive Shaft'when tbo.TBOID = '9' then 'Intermediate Gear Box'when tbo.TBOID = '10' then 'Main Rotor Hub'when tbo.TBOID = '11' then 'Air Compressor'when tbo.TBOID = '12' then 'APU'when tbo.TBOID = '13' then 'Engine'when tbo.TBOID = '14' then 'Engine Fuel Control Unit'when tbo.TBOID = '15' then 'Fire Bottle'when tbo.TBOID = '16' then 'Fire Extinguisher Squibs'when tbo.TBOID = '17' then 'Flight Control Servo V-1'when tbo.TBOID = '18' then 'Flight Control Servo V-1 Tail Rotor'when tbo.TBOID = '19' then 'Fuel Consumption (Service) Tank'when tbo.TBOID = '20' then 'Generator V-1'when tbo.TBOID = '21' then 'Generator V-5'when tbo.TBOID = '22' then 'Gyro Horizon'when tbo.TBOID = '23' then 'Hydraulic Accumulator Diaphragm'when tbo.TBOID = '24' then 'Main Fuel Tank Left Hand'when tbo.TBOID = '25' then 'Main Fuel Tank Right Hand'when tbo.TBOID = '26' then 'Main Rotor Blades'when tbo.TBOID = '27' then 'Main Transmission'when tbo.TBOID = '28' then 'Oil Cooler Fan'when tbo.TBOID = '29' then 'Stabilizer Set Kazan (L/H and R/H)'when tbo.TBOID = '30' then 'Swashplate'when tbo.TBOID = '31' then 'Tail Rotor Chain'when tbo.TBOID = '32' then 'Tail Rotor Driveshaft Assembly'when tbo.TBOID = '33' then 'Tail Rotor Gear Box'END as PartDesc1,sum(x.Awarded) as TotAwarded,sum(y.Proposed) as TotProposed,z.AAFASL,x.MVenEDD,x.YVenEDD,Projected = (tbo.AAFOnHand +sum(x.Awarded)) - tbo.Required,Planned = (tbo.AAFOnHand + sum(x.Awarded) + sum(y.Proposed)) - tbo.RequiredFROM [PROD_AVIATION_Reporting].[dbo].[SPViews.TBOItems] tboOuter Apply (SELECT Sum(lm.Qty) as Awarded, lm.Entity as Entity, Month(lm.VenEDD) as MVenEDD, Year(lm.VenEDD) as YVenEDD, List = 'Spares'FROM db_owner.[SPViews.CLS_LIMMaster] AS lmwhere lm.AwardDate is not null and lm.AwardItemNo is not null and tbo.PartNo = lm.PartNo and lm.Entity = 'AAF' and lm.VenEDD >= GetDate()Group By Entity, Month(lm.VenEDD), Year(lm.VenEDD)UNIONSELECT Sum(rm.Qty) as Awarded, rm.Entity as Entity, Month(rm.IVVenEdd) as MVenEDD, Year(rm.IVVenEdd) as YVenEDD, List = 'ROR'FROM db_owner.[SPViews.CLS_RORMaster] AS rmwhere rm.vAwardDate is not null and rm.AwardItemNo is not null and tbo.PartNo = rm.PartNo and rm.Entity = 'AAF' and rm.IVVenEDD >= GetDate()Group By Entity, Month(rm.IVVenEDD), Year(rm.IVVenEDD)) as xOuter Apply (SELECT Sum(lm.Qty) as Proposed, lm.Entity as Entity, List = 'Spares'FROM db_owner.[SPViews.CLS_LIMMaster] AS lmwhere lm.Award is null and tbo.PartNo =  lm.PartNo and lm.Entity = 'AAF' and DateAdd(day, (lm.DeliveryARO + 30), GetDate()) >= GetDate()Group By EntityUNIONSELECT Sum(rm.Qty) as Proposed, rm.Entity as Entity, List = 'ROR'FROM db_owner.[SPViews.CLS_RORMaster] AS rmwhere rm.Award is null and tbo.PartNo = rm.PartNo and rm.Entity = 'AAF' and DateAdd(day, (rm.iiArmaDelvTerms + rm.ivFinalDelvTerms + 30), GetDate()) >= GetDate()Group By Entity) as ycross Apply (SELECT sum(tbo1.[AAFASL]) as AAFASL, sum(tbo1.AAFOnHand) as AAFOHFROM [PROD_AVIATION_Reporting].[dbo].[SPViews.TBOItems] tbo1where tbo1.TBOID = tbo.TBOID) as zwhere x.Entity = 'AAF'Group By tbo.TBOID, x.Entity, x.List, z.AAFASL, x.MVenEDD, x.YVenEDD,  tbo.AAFOnHand, tbo.Required
+SELECT distinct tbo.[TBOID],x.Entity,x.List,
+case when tbo.TBOID = '1' then '246-3904-000'
+when tbo.TBOID = '2' then N'КАУ-115AM'
+when tbo.TBOID = '3' then  N'8АМТ-1250-00'
+when tbo.TBOID = '4' then N'8А-4201-00А'
+when tbo.TBOID = '5' then N'8МТ.5104.200'
+when tbo.TBOID = '7' then N'8А-6314-00'
+when tbo.TBOID = '9' then N'8А-1515-000'
+when tbo.TBOID = '10' then N'8-1930-000 SER 2'
+when tbo.TBOID = '11' then N'АК-50Т1 СЕРИЯ 3'
+when tbo.TBOID = '12' then N'АИ-9В'
+when tbo.TBOID = '13' then N'ТВ3-117ВМ'
+when tbo.TBOID = '14' then N'НР-3ВМ-Т'
+when tbo.TBOID = '15' then N'1-4-4 WITH AGENT'
+when tbo.TBOID = '16' then N'ПП-3'
+when tbo.TBOID = '17' then N'КАУ-30Б'
+when tbo.TBOID = '18' then N'РА-60Б'
+when tbo.TBOID = '19' then N'8ТВ.6101.500'
+when tbo.TBOID = '20' then N'СГС-40ПУ'
+when tbo.TBOID = '21' then N'ГТ40ПЧ8В'
+when tbo.TBOID = '22' then N'АГБ-3К СЕРИЯ 3'
+when tbo.TBOID = '23' then N'15.5303.010.006'
+when tbo.TBOID = '24' then N'8МТВ5.6102.040-03'
+when tbo.TBOID = '25' then N'8МТВ5.6102.050-03'
+when tbo.TBOID = '26' then N'8АТ.2710.000'
+when tbo.TBOID = '27' then N'ВР-14'
+when tbo.TBOID = '28' then N'8А-6311-00 СЕРИИ 04'
+when tbo.TBOID = '29' then N'8АТ-3100-000'
+when tbo.TBOID = '30' then N'8-1950-000'
+when tbo.TBOID = '31' then N'ПР-15,875-2300-1-67'
+when tbo.TBOID = '32' then N'8А-1516-000'
+when tbo.TBOID = '33' then N'246-1517-000'END as PartNo1,
+case when tbo.TBOID = '1' then 'Tail Rotor Assembly'
+when tbo.TBOID = '2' then 'Flight Control Servo'
+when tbo.TBOID = '3' then  'Vibration Damper'
+when tbo.TBOID = '4' then 'NLG Shock Strut'
+when tbo.TBOID = '5' then 'Hydraulic Servo Mount Assembly'
+when tbo.TBOID = '7' then 'Oil Cooler Drive Shaft'
+when tbo.TBOID = '9' then 'Intermediate Gear Box'
+when tbo.TBOID = '10' then 'Main Rotor Hub'
+when tbo.TBOID = '11' then 'Air Compressor'
+when tbo.TBOID = '12' then 'APU'
+when tbo.TBOID = '13' then 'Engine'
+when tbo.TBOID = '14' then 'Engine Fuel Control Unit'
+when tbo.TBOID = '15' then 'Fire Bottle'
+when tbo.TBOID = '16' then 'Fire Extinguisher Squibs'
+when tbo.TBOID = '17' then 'Flight Control Servo V-1'
+when tbo.TBOID = '18' then 'Flight Control Servo V-1 Tail Rotor'
+when tbo.TBOID = '19' then 'Fuel Consumption (Service) Tank'
+when tbo.TBOID = '20' then 'Generator V-1'
+when tbo.TBOID = '21' then 'Generator V-5'
+when tbo.TBOID = '22' then 'Gyro Horizon'
+when tbo.TBOID = '23' then 'Hydraulic Accumulator Diaphragm'
+when tbo.TBOID = '24' then 'Main Fuel Tank Left Hand'
+when tbo.TBOID = '25' then 'Main Fuel Tank Right Hand'
+when tbo.TBOID = '26' then 'Main Rotor Blades'
+when tbo.TBOID = '27' then 'Main Transmission'
+when tbo.TBOID = '28' then 'Oil Cooler Fan'
+when tbo.TBOID = '29' then 'Stabilizer Set Kazan (L/H and R/H)'
+when tbo.TBOID = '30' then 'Swashplate'when tbo.TBOID = '31' then 'Tail Rotor Chain'
+when tbo.TBOID = '32' then 'Tail Rotor Driveshaft Assembly'when tbo.TBOID = '33' then 'Tail Rotor Gear Box'END as PartDesc1,
+sum(x.Awarded) as TotAwarded,sum(y.Proposed) as TotProposed,z.AAFASL,x.MVenEDD,x.YVenEDD,Projected = (tbo.AAFOnHand +sum(x.Awarded)) - tbo.Required,Planned = (tbo.AAFOnHand + sum(x.Awarded) + sum(y.Proposed)) - tbo.Required
+FROM [PROD_AVIATION_Reporting].[dbo].[SPViews.TBOItems] tbo
+Outer Apply (SELECT Sum(lm.Qty) as Awarded, lm.Entity as Entity, Month(lm.VenEDD) as MVenEDD, Year(lm.VenEDD) as YVenEDD, List = 'Spares'
+FROM db_owner.[SPViews.CLS_LIMMaster] AS lm
+where lm.AwardDate is not null and lm.AwardItemNo is not null and tbo.PartNo = lm.PartNo and lm.Entity = 'AAF' and lm.VenEDD >= GetDate()
+Group By Entity, Month(lm.VenEDD), Year(lm.VenEDD)
+UNION
+SELECT Sum(rm.Qty) as Awarded, rm.Entity as Entity, Month(rm.IVVenEdd) as MVenEDD, Year(rm.IVVenEdd) as YVenEDD, List = 'ROR'
+FROM db_owner.[SPViews.CLS_RORMaster] AS rm
+where rm.vAwardDate is not null and rm.AwardItemNo is not null and tbo.PartNo = rm.PartNo and rm.Entity = 'AAF' and rm.IVVenEDD >= GetDate()
+Group By Entity, Month(rm.IVVenEDD), Year(rm.IVVenEDD)) as x
+Outer Apply (SELECT Sum(lm.Qty) as Proposed, lm.Entity as Entity, List = 'Spares'FROM db_owner.[SPViews.CLS_LIMMaster] AS lmwhere lm.Award is null and tbo.PartNo =  lm.PartNo and lm.Entity = 'AAF' and DateAdd(day, (lm.DeliveryARO + 30), GetDate()) >= GetDate()
+Group By Entity
+UNION
+SELECT Sum(rm.Qty) as Proposed, rm.Entity as Entity, List = 'ROR'
+FROM db_owner.[SPViews.CLS_RORMaster] AS rm
+where rm.Award is null and tbo.PartNo = rm.PartNo and rm.Entity = 'AAF' and DateAdd(day, (rm.iiArmaDelvTerms + rm.ivFinalDelvTerms + 30), GetDate()) >= GetDate()
+Group By Entity) as y
+cross Apply (SELECT sum(tbo1.[AAFASL]) as AAFASL, sum(tbo1.AAFOnHand) as AAFOH
+FROM [PROD_AVIATION_Reporting].[dbo].[SPViews.TBOItems] tbo1
+where tbo1.TBOID = tbo.TBOID) as z
+where x.Entity = 'AAF'Group By tbo.TBOID, x.Entity, x.List, z.AAFASL, x.MVenEDD, x.YVenEDD,  tbo.AAFOnHand, tbo.Required
