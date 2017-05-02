@@ -1,0 +1,8 @@
+SELECT g.APF_PO_NUM, g.APF_CHECK_AMT, g.APF_INV_AMT, ir.VIPSubmittalDate, ir.GCSCashReceiptDate, p.VendorInvoiceRecDate, g.APF_INV_DATE_8, g.APF_CHECK_DATE_8
+FROM [GCS]..none.[AP04APF] g
+inner join  [593398-SQLDB1].[PROD_AVIATION_Reporting].[dbo].[SPViews.FIN_InvoiceRequest] ir 
+on g.APF_PO_NUM = cast(ir.PoNumber as nvarchar(50)) collate SQL_Latin1_General_CP1_CI_AS
+inner join [593398-SQLDB1].[PROD_AVIATION_Reporting].[db_owner].[SPViews.SC_PA] p 
+on cast(p.VendorInvoice as nvarchar(50)) collate SQL_Latin1_General_CP1_CI_AS = g.APF_INV_NO
+WHERE (ir.GCSCashReceiptDate BETWEEN @Start AND @End) and (p.PaymentType like 'Advance%')
+group by g.APF_PO_NUM, g.APF_VOUCHER_NO, g.APF_INV_NO, g.APF_CHECK_NUM, g.APF_CHECK_AMT, g.APF_INV_AMT, ir.requesttype, ir.VIPSubmittalDate, ir.GCSCashReceiptDate, p.VendorInvoiceRecDate, g.APF_INV_DATE_8, g.APF_CHECK_DATE_8order by g.APF_VOUCHER_NO
